@@ -1,0 +1,14 @@
+
+import mongoose from "mongoose";
+
+const employeesSchema = new mongoose.Schema({
+        firstName: String,
+        lastName: String,
+        company: String,
+        address: String,
+        email: String,
+        department: String
+
+      });
+
+      export const Employees = mongoose.model('Employees', employeesSchema); 
