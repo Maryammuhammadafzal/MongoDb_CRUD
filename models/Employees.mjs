@@ -7,7 +7,8 @@ const employeesSchema = new mongoose.Schema({
         company: String,
         address: String,
         email: String,
-        department: String
+        department: String,
+        profileImage : String
 
       });
 

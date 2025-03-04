@@ -12,26 +12,75 @@
     />
   </head>
   <body>
-    <div class="container flex justify-content-center">
+    <div
+      class="d-flex justify-content-center " 
+      style="
+        height: auto;
+        width: auto;
+        padding: 1rem;
+        flex-direction: column;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      "
+    >
       <h1 class="text-center mb-5">Employees Data</h1>
       <div class="container flex row gap-3 justify-content-center">
         <% employees.forEach((employee) => { %>
-        <div class="card" style="width: 18rem">
+        <div
+          class="card"
+          style="
+            width: 25rem;
+            box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+            background-color: rgb(246, 246, 246);
+          "
+        >
           <div class="card-body">
-            <h5 class="card-title">
+            <h5 class="card-title fs-3 my-3">
               <%= employee.firstName + " " + employee.lastName %>
             </h5>
-            <p class="card-text">
-              Some quick example text to build on the card title.
+            <p class="card-text border-bottom py-1 border-dark" style="font-size: smaller;">
+              <%= employee.firstName + " " + employee.lastName + " drives the " + employee.department + " strategy of the " + employee.company %>
+
             </p>
           </div>
-          <ul class="list-group list-group-light list-group-small">
-            <li class="list-group-item px-4"><%= employee.company %></li>
-            <li class="list-group-item px-4"><%= employee.email %></li>
-            <li class="list-group-item px-4"><%= employee.department %></li>
-          </ul>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Email :</span> <%= employee.email %></li>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Company : </span> <%= employee.company %></li>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Department :</span> <%= employee.department %></li>
+          <!-- <ul class="list-group list-group-light list-group-small">
+          </ul> -->
           <div class="card-body">
             <button
+              data-mdb-ripple-init
+              style="align-self: center"
+              class="btn btn-secondary btn-block"
+              id="edit"
+              data-id="<%= employee._id %>"
+              data-name="<%= employee.firstName %>"
+              data-lastname="<%= employee.lastName %>"
+              data-email="<%= employee.email %>"
+              data-company="<%= employee.company %>"
+              data-address="<%= employee.address %>"
+              data-department="<%= employee.department %>"
+              onclick="editFunction(event)"
+            >
+              Edit
+            </button>
+            <button
+              data-mdb-ripple-init
+              style="align-self: center"
+              class="btn btn-danger btn-block"
+              id="delete"
+              data-id="<%= employee._id %>"
+              data-name="<%= employee.firstName %>"
+              data-email="<%= employee.email %>"
+              onclick="deleteFunction(event)"
+            >
+              Delete
+            </button>
+
+            <!-- <button
               id="edit"
               data-id="<%= employee._id %>"
               data-name="<%= employee.firstName %>"
@@ -52,14 +101,30 @@
               onclick="deleteFunction(event)"
             >
               Delete
-            </button>
+            </button> -->
           </div>
         </div>
         <% }); %>
       </div>
       <div class="w-100 d-flex mt-5 gap-3 justify-content-center">
-        <button class="w-40 py-2" id="addMore">Add More</button>
-        <button class="w-40 py-2" id="deleteAll">Delete All</button>
+        <button
+          data-mdb-ripple-init
+          id="addMore"
+          style="align-self:center; font-size: large; "
+          class="btn btn-secondary btn-block px-4 py-3 mb-4"
+        >
+          Add More
+        </button>
+        <button
+          data-mdb-ripple-init
+          id="deleteAll"
+          style="align-self:center; font-size: large; "
+          class="btn btn-danger btn-block px-4 py-3 mb-4"
+        >
+          Delete All
+        </button>
+        <!-- <button class="w-40 py-2 bg-secondary" >Add More</button>
+        <button class="w-40 py-2 bg-danger" id="deleteAll">Delete All</button> -->
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -82,10 +147,10 @@
           let employeeCompany = event.target.dataset.company; // Get email if available
           let employeeAddress = event.target.dataset.address; // Get email if available
           let employeeDepartment = event.target.dataset.department; // Get email if available
-          
-           // Fetch employee details
-    let response = await fetch(`/employee/${employeeId}`);
-    let employee = await response.json();
+
+          // Fetch employee details
+          let response = await fetch(`/employee/${employeeId}`);
+          let employee = await response.json();
 
           Swal.fire({
             title: "Edit Employee",
@@ -110,7 +175,7 @@
                 department: document.getElementById("swal-department").value,
               };
               console.log(updatedEmployee);
-              
+
               let response = await fetch(`/edit/${employeeId}`, {
                 method: "PUT",
                 headers: {
@@ -127,18 +192,17 @@
                   title: "Your work has been saved",
                   showConfirmButton: false,
                   timer: 1500,
-                }).then(()=>{
+                }).then(() => {
                   window.location.reload();
                 });
-              }else{
+              } else {
                 Swal.fire({
                   position: "top-end",
                   icon: "error",
                   title: "Your work has not been updated",
                   showConfirmButton: false,
                   timer: 1500,
-                })
-
+                });
               }
             }
           });
