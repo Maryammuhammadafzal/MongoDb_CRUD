@@ -2,13 +2,13 @@
 import mongoose from "mongoose";
 
 const employeesSchema = new mongoose.Schema({
-        firstName: String,
-        lastName: String,
-        company: String,
-        address: String,
-        email: String,
-        department: String,
-        profileImage : String
+        firstName:  { type: String, required: true },
+        lastName:  { type: String, required: true },
+        company:  { type: String, required: true },
+        address:  { type: String, required: true },
+        email:  { type: String, required: true },
+        department:  { type: String, required: true },
+        profileImage :  { type: String, required: true }
 
       });
 

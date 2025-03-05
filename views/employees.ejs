@@ -13,7 +13,7 @@
   </head>
   <body>
     <div
-      class="d-flex justify-content-center " 
+      class="d-flex justify-content-center"
       style="
         height: auto;
         width: auto;
@@ -27,7 +27,11 @@
     >
       <h1 class="text-center mb-5">Employees Data</h1>
       <div class="container flex row gap-3 justify-content-center">
-        <% employees.forEach((employee) => { %>
+        <% if (employees.length === 0) { %>
+        <p style="text-align: center; font-size: larger; color: red">
+          Employee not found!
+        </p>
+        <% } else { %> <% employees.forEach((employee) => { %>
         <div
           class="card"
           style="
@@ -37,17 +41,41 @@
           "
         >
           <div class="card-body">
+            <div
+              class="image"
+              style="
+                width: 100%;
+                height: 100px;
+                display: flex;
+                align-items: center;
+              "
+            >
+              <img
+                style="height: 100px; width: 100px; border-radius: 1rem"
+                src="/uploads/<%= employee.profileImage %>"
+                alt="image"
+              />
+            </div>
             <h5 class="card-title fs-3 my-3">
               <%= employee.firstName + " " + employee.lastName %>
             </h5>
-            <p class="card-text border-bottom py-1 border-dark" style="font-size: smaller;">
-              <%= employee.firstName + " " + employee.lastName + " drives the " + employee.department + " strategy of the " + employee.company %>
-
+            <p
+              class="card-text border-bottom py-1 border-dark"
+              style="font-size: smaller"
+            >
+              <%= employee.firstName + " " + employee.lastName + " drives the "
+              + employee.department + " strategy of the " + employee.company %>
             </p>
           </div>
-          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Email :</span> <%= employee.email %></li>
-          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Company : </span> <%= employee.company %></li>
-          <li class="list-group-item px-3 py-1" style="font-size: 1rem;"> <span class="fw-bold">Department :</span> <%= employee.department %></li>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem">
+            <span class="fw-bold">Email :</span> <%= employee.email %>
+          </li>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem">
+            <span class="fw-bold">Company : </span> <%= employee.company %>
+          </li>
+          <li class="list-group-item px-3 py-1" style="font-size: 1rem">
+            <span class="fw-bold">Department :</span> <%= employee.department %>
+          </li>
           <!-- <ul class="list-group list-group-light list-group-small">
           </ul> -->
           <div class="card-body">
@@ -104,13 +132,13 @@
             </button> -->
           </div>
         </div>
-        <% }); %>
+        <% }); %> <% } %>
       </div>
       <div class="w-100 d-flex mt-5 gap-3 justify-content-center">
         <button
           data-mdb-ripple-init
           id="addMore"
-          style="align-self:center; font-size: large; "
+          style="align-self: center; font-size: large"
           class="btn btn-secondary btn-block px-4 py-3 mb-4"
         >
           Add More
@@ -118,13 +146,12 @@
         <button
           data-mdb-ripple-init
           id="deleteAll"
-          style="align-self:center; font-size: large; "
+          style="align-self: center; font-size: large"
           class="btn btn-danger btn-block px-4 py-3 mb-4"
         >
           Delete All
         </button>
-        <!-- <button class="w-40 py-2 bg-secondary" >Add More</button>
-        <button class="w-40 py-2 bg-danger" id="deleteAll">Delete All</button> -->
+  
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -140,13 +167,13 @@
 
       const editFunction = async (event) => {
         try {
-          let employeeId = event.target.dataset.id; // Get name if available
-          let employeeName = event.target.dataset.name; // Get name if available
+          let employeeId = event.target.dataset.id; 
+          let employeeName = event.target.dataset.name; 
           let employeeLastName = event.target.dataset.lastname;
-          let employeeEmail = event.target.dataset.email; // Get email if available
-          let employeeCompany = event.target.dataset.company; // Get email if available
-          let employeeAddress = event.target.dataset.address; // Get email if available
-          let employeeDepartment = event.target.dataset.department; // Get email if available
+          let employeeEmail = event.target.dataset.email; 
+          let employeeCompany = event.target.dataset.company; 
+          let employeeAddress = event.target.dataset.address; 
+          let employeeDepartment = event.target.dataset.department; 
 
           // Fetch employee details
           let response = await fetch(`/employee/${employeeId}`);
@@ -165,16 +192,31 @@
         `,
             showCancelButton: true,
             confirmButtonText: "Save",
+            preConfirm: () => {
+              // Get input values
+              let firstName = document.getElementById("swal-name").value.trim();
+              let email = document.getElementById("swal-email").value.trim();
+              let company = document
+                .getElementById("swal-company")
+                .value.trim();
+              let address = document
+                .getElementById("swal-address")
+                .value.trim();
+              let department = document
+                .getElementById("swal-department")
+                .value.trim();
+
+              // Validation: Check if any field is empty
+              if (!firstName || !email || !company || !address || !department) {
+                Swal.showValidationMessage("⚠️ All input fields are required!");
+                return false;
+              }
+
+              return { firstName, email, company, address, department };
+            },
           }).then(async (result) => {
             if (result.isConfirmed) {
-              let updatedEmployee = {
-                firstName: document.getElementById("swal-name").value,
-                email: document.getElementById("swal-email").value,
-                company: document.getElementById("swal-company").value,
-                address: document.getElementById("swal-address").value,
-                department: document.getElementById("swal-department").value,
-              };
-              console.log(updatedEmployee);
+              let updatedEmployee = result.value;
 
               let response = await fetch(`/edit/${employeeId}`, {
                 method: "PUT",
@@ -183,9 +225,9 @@
                 },
                 body: JSON.stringify(updatedEmployee),
               });
-              let result = await response.json();
+              let resData = await response.json();
 
-              if (result.success) {
+              if (resData.success) {
                 Swal.fire({
                   position: "top-end",
                   icon: "success",
@@ -207,26 +249,48 @@
             }
           });
         } catch (error) {
-          console.log("Update Error", error);
+          Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Oops...",
+            text: `Update Error: ${error.message}`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       };
 
       const deleteFunction = async (event) => {
         try {
-          let employeeId = event.target.dataset.id; // Get name if available
-          let employeeName = event.target.dataset.name; // Get name if available
-          let employeeEmail = event.target.dataset.email; // Get email if available
+          let employeeId = event.target.dataset.id; 
+          let employeeName = event.target.dataset.name; 
+          let employeeEmail = event.target.dataset.email; 
           console.log(employeeId);
 
           if (!employeeId) {
-            alert("Error: Employee ID not found!");
+            Swal.fire({
+              position: "top-end",
+              icon: "error",
+              title: "Oops...",
+              text: "Error: Employee ID not found!",
+              showConfirmButton: false,
+              timer: 1500,
+            });
             return;
           }
 
-          let confirmDelete = confirm(
-            `Are you sure you want to delete ${employeeName}?`
-          );
-          if (!confirmDelete) return;
+          const confirmDeleted = await Swal.fire({
+            title: "Are you sure?",
+            text: "You want to delete the employee!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+          });
+          if (!confirmDeleted.isConfirmed) {
+            return;
+          }
 
           let response = await fetch("/delete", {
             method: "Delete",
@@ -241,13 +305,36 @@
           let result = await response.json();
 
           if (result.success) {
-            alert(`${employeeName} Deleted Successfully`);
-            window.location.reload();
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: `${employeeName} Deleted Successfully`,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+
+            setTimeout(() => {
+              window.location.reload(); // Refresh the page after deletion
+            }, 1600);
           } else {
-            alert(`User not deleted ${result.name} , ${result.email}`);
+            Swal.fire({
+              position: "top-end",
+              icon: "error",
+              title: "Oops...",
+              text: `User not deleted ${result.name} , ${result.email}`,
+              showConfirmButton: false,
+              timer: 1500,
+            });
           }
         } catch (error) {
-          alert("Error deleting user: " + error);
+          Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Oops...",
+            text: error.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       };
 
@@ -258,8 +345,26 @@
             "Content-Type": "application/json",
           },
         });
-
-        window.location.href = "/";
+        let result = await response.json();
+        if (result.success) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: `All User Deleted Successfully`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          window.location.href = "/";
+        } else {
+          Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Oops...",
+            text: `User not deleted`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       });
     </script>
     <script
